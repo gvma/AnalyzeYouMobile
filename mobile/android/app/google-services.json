@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "680678124460",
+    "firebase_url": "https://analyzeyou-b2375.firebaseio.com",
+    "project_id": "analyzeyou-b2375",
+    "storage_bucket": "analyzeyou-b2375.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680678124460:android:7aade719779b0673",
+        "android_client_info": {
+          "package_name": "com.ic.analyze_you"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680678124460-384lt7gi93jt7njibbgmu1h7fk08jfqa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ic.analyze_you",
+            "certificate_hash": "753fe178872782086b4a5db53515e8e2c13c27db"
+          }
+        },
+        {
+          "client_id": "680678124460-o7cl9fa2vvl3lru9s9q1b9qa4m71chpp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZQ2yXir_bn4q3_S9MD_Ilbe72-uSYhrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "680678124460-o7cl9fa2vvl3lru9s9q1b9qa4m71chpp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
