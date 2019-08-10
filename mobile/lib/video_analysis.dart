@@ -20,7 +20,7 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
     return Center(
       child: CircularProgressIndicator(
           strokeWidth: 3.0,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent)
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[900])
       ),
     );
   }
@@ -29,10 +29,12 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
     return FutureBuilder<Map> (
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          // finally, the images are loaded
           Iterable<dynamic> it = snapshot.data.values;
           final graphics = it.map((url) => PhotoViewGalleryPageOptions(
-              imageProvider: NetworkImage(url))
+              imageProvider: NetworkImage(url)),
           ).toList();
+          // creating a Photo Gallery to see the photos with ease
           return PhotoViewGallery(
             scrollDirection: Axis.vertical,
             pageOptions: graphics,
@@ -42,9 +44,10 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
           );
         } else {
           return Center(
+            // while the images aren't loaded yet
             child: CircularProgressIndicator(
                 strokeWidth: 3.0,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent)
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[900])
             ),
           );
         }
@@ -55,20 +58,19 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
 
   void sendAndEraseText(BuildContext context, String value, TextEditingController _controller) {
     Future<Map> response;
+    // Trying to get a response from the server
     try {
       Get get = new Get(
         userToken: this.googleAccessToken
       );
+      // getting response from server
      response = get.makeGetRequest(_controller.text);
-     if (response == null) {
-       print("Response eh null");
-     }
       // url = https://api-analyzeyou.herokuapp.com/statistics/
     } catch (e) {
       //TODO printar dizendo que não existe um link para esse video
       print(e.toString());
     }
-//    response[''];]
+    // popping a screen to update the next one
     Navigator.pop(context);
     _controller.clear();
     setState(() => graphs = images(context, response));
@@ -79,18 +81,27 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
     String value = "";
     final TextEditingController _controller = new TextEditingController();
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue[900],
         title: Text('AnalyzeYou'),
         centerTitle: true,
       ),
       body: graphs,
       floatingActionButton: RaisedButton.icon(
-        label: Text("Put your link here!"),
-        icon: Icon(Icons.link),
-          shape: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            gapPadding: 1000
+        label: Text(
+          "Put your link here!",
+          style: TextStyle(
+            color: Colors.blue[900],
+            fontWeight: FontWeight.bold,
+          )
+        ),
+        icon: Icon(
+          Icons.link,
+          color: Colors.blue[900],
+        ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
           ),
           onPressed: () => showDialog(
               context: context,
@@ -98,12 +109,16 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
                 return AlertDialog(
                   actions: <Widget>[
                     RaisedButton(
-                      color: Colors.blueAccent,
+                      color: Colors.white70,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
                       child: Center(
                         child: Text(
                           "Send video",
                           style: TextStyle(
-                            color: Colors.white70
+                            color: Colors.blue[900],
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         widthFactor: 1.3,
@@ -116,34 +131,13 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
                     textInputAction: TextInputAction.send,
                     decoration: new InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Put your link here...'
+                      hintText: 'Ex: youtube.com+/watch?v=xxx',
                     ),
                   ),
                 );
               }
           )
       ),
-//      body: Column(
-//        children: <Widget>[
-//          Padding(
-//              padding: EdgeInsets.all(16),
-//              child: TextField(
-//                  controller: _controller,
-//                  textInputAction: TextInputAction.send,
-//                  decoration: new InputDecoration(
-//                    border: OutlineInputBorder(),
-//                    hintText: 'Put your link here...',
-//                    hintStyle: TextStyle(
-//                        fontWeight: FontWeight.w300,
-//                        color: Colors.grey
-//                    ),
-//                  )
-//              )
-//          ),
-//
-//          graphs
-//        ],
-//      ),
     );
   }
 }

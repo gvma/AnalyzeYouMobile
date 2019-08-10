@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:analyze_you/login_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:analyze_you/video_analysis.dart';
 
@@ -38,8 +37,9 @@ class HomePage extends StatelessWidget {
     print("Id token: "+googleIdToken);
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.blue[900],
           title: Text("AnalyzeYou"),
           centerTitle: true,
         ),
@@ -55,7 +55,8 @@ class HomePage extends StatelessWidget {
                       padding: EdgeInsets.all(10.0),
                       child: Text(user.displayName,
                         style: TextStyle(
-//                          fontWeight: FontWeight.w300,
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic,
                         )
                       ),
@@ -65,9 +66,8 @@ class HomePage extends StatelessWidget {
                 ),
                 decoration: UnderlineTabIndicator(
                   borderSide: BorderSide(
-                    color: Colors.red,
+                    color: Colors.blue[900],
                     style: BorderStyle.solid,
-                    width: 2.0
                   )
                 ),
               ),
@@ -76,11 +76,25 @@ class HomePage extends StatelessWidget {
                 color: Colors.black,
                 tiles:
                 <Widget>[
-                  ListTile(title: Text("Analyze one of your videos"), 
+                  ListTile(
+                      title: Text(
+                        "Analyze one of your videos",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue[900]
+                        ),
+                      ),
                       onTap: () => typeVideoURL(context)
-                      
                   ),
-                  ListTile(title: Text("Sign out"), onTap: () => _signOut(context))
+                  ListTile(
+                      title: Text(
+                          "Sign out",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color:  Colors.blue[900],
+                        ),
+                      ),
+                      onTap: () => _signOut(context))
                 ],
               ).toList(),
             )
