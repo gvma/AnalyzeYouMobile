@@ -9,30 +9,37 @@ class LoginPage extends StatelessWidget {
 
   final String title;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _googleSignIn = GoogleSignIn();
+  final _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email'
+    ]
+  );
 
   Future<void> _handleSignIn(BuildContext context) async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final FirebaseUser user = await _auth.signInWithCredential(credential);
-    print("signed in " + user.displayName);
-    Navigator.push(context,
-        MaterialPageRoute(
-            builder: (context) => HomePage(title: title,
-                user: user,
-                googleSignIn: _googleSignIn,
-                googleUser: googleUser,
-                googleIdToken: googleAuth.idToken,
-                googleAccessToken : googleAuth.accessToken
-            )
-        )
-    );
+    try {
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final FirebaseUser user = await _auth.signInWithCredential(credential);
+      print("signed in " + user.displayName);
+      Navigator.push(context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                  title: title,
+                  user: user,
+                  googleSignIn: _googleSignIn,
+                  googleUser: googleUser,
+                  googleIdToken: googleAuth.idToken,
+                  googleAccessToken : googleAuth.accessToken
+              )
+          )
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -53,7 +60,7 @@ class LoginPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(
-                  height: 300,
+                  height: 132,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.asset("assets/AY.PNG"),
@@ -75,7 +82,7 @@ class LoginPage extends StatelessWidget {
                   onPressed: () => _handleSignIn(context),
                   textTheme: ButtonTextTheme.accent,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0)
+                      borderRadius: BorderRadius.circular(10.0)
                   ),
                 ),
                 RaisedButton.icon(

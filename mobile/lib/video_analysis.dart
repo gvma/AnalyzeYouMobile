@@ -2,20 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:analyze_you/get.dart';
 import 'package:flutter/rendering.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class VideoAnalysis extends StatefulWidget {
-  VideoAnalysis({Key key, this.googleIdToken, this.googleAccessToken})
+  VideoAnalysis({Key key, this.googleIdToken, this.googleAccessToken, this.username})
       : super(key: key);
   final String googleIdToken;
   final String googleAccessToken;
-  _VideoAnalysisState createState() => _VideoAnalysisState(googleIdToken: googleIdToken, googleAccessToken: googleAccessToken);
+  final String username;
+  _VideoAnalysisState createState() => _VideoAnalysisState(
+      googleIdToken: googleIdToken,
+      googleAccessToken: googleAccessToken,
+      username: username
+  );
 }
 
 class _VideoAnalysisState extends State<VideoAnalysis> {
-  _VideoAnalysisState({this.googleIdToken, this.googleAccessToken});
-  Widget graphs = SizedBox.shrink();
+  _VideoAnalysisState({this.googleIdToken, this.googleAccessToken, this.username});
+  Widget graphs = Center(
+    child: SizedBox(
+        height: 300,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.asset("assets/AY.PNG"),
+        )
+    ),
+  );
   final String googleIdToken;
   final String googleAccessToken;
+  final String username;
   Widget loadImages() {
     return Center(
       child: CircularProgressIndicator(
@@ -25,16 +41,24 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
     );
   }
 
-  Widget images(BuildContext context, Future<Map> images) {
+  Widget images(BuildContext context, Future<Map> images, String videoLink) {
     return FutureBuilder<Map> (
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // finally, the images are loaded
-          Iterable<dynamic> it = snapshot.data.values;
-          final graphics = it.map((url) => PhotoViewGalleryPageOptions(
+          Iterable<dynamic> json = snapshot.data.values;
+          Iterable<dynamic> images = json.take(3);
+          Firestore.instance.collection("UserData").document().setData({
+            "image_link": json.elementAt(0),
+            "negative_comment_count": json.elementAt(3)[0],
+            "positive_comment_count": json.elementAt(3)[1],
+            "username": this.username,
+            "video_link": videoLink
+          });
+          final graphics = images.map((url) => PhotoViewGalleryPageOptions(
               imageProvider: NetworkImage(url)),
           ).toList();
-          // creating a Photo Gallery to see the photos with ease
+//           creating a Photo Gallery to see the photos with ease
           return PhotoViewGallery(
             scrollDirection: Axis.vertical,
             pageOptions: graphics,
@@ -61,19 +85,19 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
     // Trying to get a response from the server
     try {
       Get get = new Get(
-        userToken: this.googleAccessToken
+        url: "https://api-analyzeyou.herokuapp.com/statistics/"
       );
       // getting response from server
-     response = get.makeGetRequest(_controller.text);
+     response = get.makeGetRequestToVideoAnalysis(_controller.text);
       // url = https://api-analyzeyou.herokuapp.com/statistics/
     } catch (e) {
-      //TODO printar dizendo que não existe um link para esse video
-      print(e.toString());
+      print('Error while fetching data');
+      return;
     }
     // popping a screen to update the next one
     Navigator.pop(context);
+    setState(() => graphs = images(context, response, _controller.text));
     _controller.clear();
-    setState(() => graphs = images(context, response));
   }
 
   @override
@@ -131,7 +155,7 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
                     textInputAction: TextInputAction.send,
                     decoration: new InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Ex: youtube.com+/watch?v=xxx',
+                      hintText: 'Ex: youtube.com/watch?v=xxx',
                     ),
                   ),
                 );
