@@ -29,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   String positiveURL = "";
   Widget negativeImage = SizedBox.shrink();
   String negativeURL = "";
+  String positiveVideo = "";
+  String negativeVideo = "";
   Map<String, Widget> images= {"positive": SizedBox.shrink(), "negative": SizedBox.shrink()};
 
   Future<void> _signOut(BuildContext context) async{
@@ -52,6 +54,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // query for positive comments
     Firestore.instance
         .collection('UserData')
         .document(user.uid)
@@ -62,15 +65,17 @@ class _HomePageState extends State<HomePage> {
           if (data.documents.length > 0) {
             if (positiveURL != data.documents[0].data["image_link"]) {
               positiveURL = data.documents[0].data["image_link"];
+              positiveVideo = data.documents[0].data["video_link"];
               setState(() => positiveImage = Image.network(
                 data.documents[0].data["image_link"],
-                fit: BoxFit.fill,
+                fit: BoxFit.fitWidth,
                 height: 260.0,
                 width: 260.0,
               ));
             }
           }
         });
+    // query for negative comments
     Firestore.instance
         .collection('UserData')
         .document(user.uid)
@@ -82,20 +87,21 @@ class _HomePageState extends State<HomePage> {
           if (data.documents.length > 0) {
             if (negativeURL != data.documents[0].data['image_link']) {
               negativeURL = data.documents[0].data['image_link'];
+              negativeVideo = data.documents[0].data["video_link"];
               setState(() => negativeImage = Image.network(
                 data.documents[0].data["image_link"],
-                fit: BoxFit.fill,
+                fit: BoxFit.fitHeight,
                 height: 260.0,
                 width: 260.0,
               ));
             }
           }
         });
-
     return SafeArea(
         child: Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             backgroundColor: Colors.blue[900],
             title: Text("AnalyzeYou"),
             centerTitle: true,
@@ -135,26 +141,44 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      "Most Positive Video",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.blue[900],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.0
+                    Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.blue[900],
+                            style: BorderStyle.solid,
+                          ),
+                          shape: BoxShape.rectangle
+                      ),
+                      child: Text(
+                        "Most Positive Video: "+positiveVideo,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.blue[900],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0
+                        ),
                       ),
                     ),
                     positiveImage,
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      "Most Negative Video",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.blue[900],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.0
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.blue[900],
+                          style: BorderStyle.solid,
+                        ),
+                        shape: BoxShape.rectangle
+                      ),
+                      child: Text(
+                        "Most Negative Video: "+negativeVideo,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.blue[900],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.0
+                        ),
                       ),
                     ),
                     negativeImage,

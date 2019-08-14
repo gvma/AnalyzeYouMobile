@@ -50,7 +50,7 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
           // finally, the images are loaded
           Iterable<dynamic> json = snapshot.data.values;
           Iterable<dynamic> images = json.take(3);
-          print(widget.user.uid);
+          // check whether is a guest or not
           if (googleIdToken != null) {
             Firestore.instance.collection("UserData").document(widget.user.uid).collection("AnalyzedVideos").document().setData({
               "image_link": json.elementAt(0),
@@ -60,17 +60,67 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
               "video_link": videoLink
             });
           }
+          // get images to update the photo gallery
+
           final graphics = images.map((url) => PhotoViewGalleryPageOptions(
               imageProvider: NetworkImage(url)),
           ).toList();
-//           creating a Photo Gallery to see the photos with ease
-          return PhotoViewGallery(
-            scrollDirection: Axis.vertical,
-            pageOptions: graphics,
-            backgroundDecoration: BoxDecoration(
-              color: Colors.white
-            ),
+
+          return ListView(
+            children: <Widget>[
+              SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: Text(
+                  "Donut graphic",
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0
+                  ),
+                ),
+              ),
+              Image.network(images.elementAt(0)),
+              Divider(
+                color: Colors.blue[900],
+              ),
+              Center(
+                child: Text(
+                  "Time series",
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0
+                  ),
+                ),
+              ),
+              Image.network(images.elementAt(1)),
+              Divider(
+                color: Colors.blue[900],
+              ),
+              Center(
+                child: Text(
+                  "Word cloud",
+                  style: TextStyle(
+                    color: Colors.blue[900],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0
+                  ),
+                ),
+              ),
+              Image.network(images.elementAt(2)),
+            ],
           );
+//           creating a Photo Gallery to see the photos with ease
+
+//          return PhotoViewGallery(
+//            scrollDirection: Axis.vertical,
+//            pageOptions: graphics,
+//            backgroundDecoration: BoxDecoration(
+//              color: Colors.white
+//            ),
+//          );
         } else {
           return Center(
             // while the images aren't loaded yet
@@ -93,7 +143,7 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
         url: "https://api-analyzeyou.herokuapp.com/statistics/"
       );
       // getting response from server
-     response = get.makeGetRequestToVideoAnalysis(_controller.text);
+     response = get.makeGetRequest(_controller.text);
       // url = https://api-analyzeyou.herokuapp.com/statistics/
     } catch (e) {
       print('Error while fetching data');

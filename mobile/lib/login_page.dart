@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:analyze_you/video_analysis.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class LoginPage extends StatelessWidget {
   LoginPage({Key key, this.title}) : super(key: key);
 
@@ -19,6 +18,7 @@ class LoginPage extends StatelessWidget {
 
   Future<void> _handleSignIn(BuildContext context) async {
     try {
+      // signing in and authenticating the google/firebase user
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.getCredential(
