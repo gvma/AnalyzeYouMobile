@@ -3,14 +3,16 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:analyze_you/get.dart';
 import 'package:flutter/rendering.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class VideoAnalysis extends StatefulWidget {
-  VideoAnalysis({Key key, this.googleIdToken, this.googleAccessToken, this.username})
+  VideoAnalysis({Key key, this.googleIdToken, this.googleAccessToken, this.username, this.user})
       : super(key: key);
   final String googleIdToken;
   final String googleAccessToken;
   final String username;
+  final FirebaseUser user;
+
   _VideoAnalysisState createState() => _VideoAnalysisState(
       googleIdToken: googleIdToken,
       googleAccessToken: googleAccessToken,
@@ -48,13 +50,16 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
           // finally, the images are loaded
           Iterable<dynamic> json = snapshot.data.values;
           Iterable<dynamic> images = json.take(3);
-          Firestore.instance.collection("UserData").document().setData({
-            "image_link": json.elementAt(0),
-            "negative_comment_count": json.elementAt(3)[0],
-            "positive_comment_count": json.elementAt(3)[1],
-            "username": this.username,
-            "video_link": videoLink
-          });
+          print(widget.user.uid);
+          if (googleIdToken != null) {
+            Firestore.instance.collection("UserData").document(widget.user.uid).collection("AnalyzedVideos").document().setData({
+              "image_link": json.elementAt(0),
+              "negative_comment_count": json.elementAt(3)[0],
+              "positive_comment_count": json.elementAt(3)[1],
+              "uid": widget.user.uid,
+              "video_link": videoLink
+            });
+          }
           final graphics = images.map((url) => PhotoViewGalleryPageOptions(
               imageProvider: NetworkImage(url)),
           ).toList();
@@ -128,38 +133,38 @@ class _VideoAnalysisState extends State<VideoAnalysis> {
             borderRadius: BorderRadius.circular(30.0),
           ),
           onPressed: () => showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  actions: <Widget>[
-                    RaisedButton(
-                      color: Colors.white70,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "Send video",
-                          style: TextStyle(
-                            color: Colors.blue[900],
-                            fontWeight: FontWeight.bold,
-                          ),
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                actions: <Widget>[
+                  RaisedButton(
+                    color: Colors.white70,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Send video",
+                        style: TextStyle(
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.bold,
                         ),
-                        widthFactor: 1.3,
                       ),
-                      onPressed: () => sendAndEraseText(context, value, _controller),
+                      widthFactor: 1.3,
                     ),
-                  ],
-                  content: TextField(
-                    controller: _controller,
-                    textInputAction: TextInputAction.send,
-                    decoration: new InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Ex: youtube.com/watch?v=xxx',
-                    ),
+                    onPressed: () => sendAndEraseText(context, value, _controller),
                   ),
-                );
-              }
+                ],
+                content: TextField(
+                  controller: _controller,
+                  textInputAction: TextInputAction.send,
+                  decoration: new InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Ex: youtube.com/watch?v=xxx',
+                  ),
+                ),
+              );
+            }
           )
       ),
     );

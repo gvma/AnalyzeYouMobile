@@ -3,6 +3,8 @@ import 'package:analyze_you/home_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:analyze_you/video_analysis.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key key, this.title}) : super(key: key);
@@ -25,6 +27,9 @@ class LoginPage extends StatelessWidget {
       );
       final FirebaseUser user = await _auth.signInWithCredential(credential);
       print("signed in " + user.displayName);
+      Firestore.instance.collection("UserData").document(user.uid).setData({
+        "created": true
+      });
       Navigator.push(context,
           MaterialPageRoute(
               builder: (context) => HomePage(
@@ -108,6 +113,7 @@ class LoginPage extends StatelessWidget {
                       builder: (context) => VideoAnalysis(
                         googleAccessToken: null,
                         googleIdToken: null,
+                        user: null,
                       )
                     )
                   ),
